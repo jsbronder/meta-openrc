@@ -1,0 +1,54 @@
+name: meta-openrc CI
+
+on:
+  push:
+    branches:
+      - dunfell
+  pull_request:
+    branches:
+      - dunfell
+
+jobs:
+  build:
+    name: meta-openrc Build
+    runs-on: ubuntu-20.04
+    timeout-minutes: 720
+    steps:
+      - name: Install required packages
+        run: |
+          sudo apt-get install diffstat
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: meta-openrc
+      - name: Shared-State Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            build/sstate-cache
+          key: sstate-${{ github.base_ref }}-${{ github.sha }}
+          restore-keys: |
+            sstate-${{ github.base_ref }}-
+            sstate-
+      - name: Clone Poky
+        run: git clone -b ${{ github.base_ref }} git://git.yoctoproject.org/poky
+      - name: Check layer
+        run: |
+          source poky/oe-init-build-env build
+          yocto-check-layer ../meta-openrc
+      - name: Initialize build directory
+        run: |
+          source poky/oe-init-build-env build
+          bitbake-layers add-layer ../meta-openrc
+          echo 'INHERIT += "rm_work"' >> conf/local.conf
+          echo 'DISTRO_FEATURES:remove = "alsa bluetooth usbgadget zeroconf 3g nfc x11 opengl ptest wayland vulkan gobject-introspection-data"' >> conf/local.conf
+          echo 'SSTATE_MIRRORS = "file://.* http://sstate.yoctoproject.org/3.1/PATH;downloadfilename=PATH"' >> conf/local.conf
+      - name: Build openrc
+        run: |
+          source poky/oe-init-build-env build
+          bitbake openrc
+      - name: Prune Shared-State Cache
+        run: |
+          source poky/oe-init-build-env build
+          sstate-cache-management.sh --yes --cache-dir=sstate-cache --remove-duplicated
+          sstate-cache-management.sh --yes --cache-dir=sstate-cache --stamps-dir=tmp/stamps
