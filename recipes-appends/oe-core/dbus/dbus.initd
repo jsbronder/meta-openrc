@@ -1,0 +1,31 @@
+#!/sbin/openrc-run
+
+depend() {
+	need localmount
+	after bootmisc
+}
+
+command_args="--system ${COMMAND_ARGS}"
+command="/usr/bin/dbus-daemon"
+extra_started_commands="reload"
+
+start_pre() {
+	[ ! -d /var/run/dbus ] && mkdir -p /var/run/dbus
+	[ ! -f /etc/machine-id ] && dbus-uuidgen > /etc/machine-id
+	return 0
+}
+
+reload() {
+	local r
+	ebegin "Reloading D-BUS messagebus config"
+
+	/usr/bin/dbus-send \
+		--print-reply \
+		--system \
+		--type=method_call \
+		--dest=org.freedesktop.DBus \
+		/ org.freedesktop.DBus.ReloadConfig > /dev/null
+	eend ${?}
+}
+
+# vim: noet ft=gentoo-init-d
