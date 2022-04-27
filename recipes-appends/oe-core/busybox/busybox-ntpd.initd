@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+depend() {
+	need net
+	use dns logger
+}
+
+command_args="-n ${COMMAND_ARGS}"
+command_background="true"
+pidfile="/var/run/busybox-ntpd.pid"
+description="busybox ntpd"
+command="/usr/sbin/ntpd"
+
+# vim: noet ft=gentoo-init-d
