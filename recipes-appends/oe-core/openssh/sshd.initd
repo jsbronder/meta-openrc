@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+
+pidfile="/var/run/sshd.pid"
+command_args=${COMMAND_ARGS}
+description="ssh daemon"
+command="/usr/sbin/sshd"
+
+extra_started_commands="reload"
+
+depend() {
+	use logger dns
+}
+
+start_pre() {
+	ssh-keygen -A || return 1
+	[ ! -d /var/run/sshd ] && mkdir -p /var/run/sshd
+	return 0
+}
+
+reload() {
+	ebegin "Reloading ${SVCNAME}"
+	start-stop-daemon --signal HUP \
+	    --exec ${command} --pidfile ${pidfile}
+	eend $?
+}
+
+# vim: noet ft=gentoo-init-d
