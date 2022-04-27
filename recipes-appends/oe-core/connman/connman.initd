@@ -1,0 +1,12 @@
+#!/sbin/openrc-run
+
+depend() {
+	need dbus
+	provide net
+}
+
+command_args="${COMMAND_ARGS}"
+description="connection manager"
+command="/usr/sbin/connmand"
+
+# vim: noet ft=gentoo-init-d
