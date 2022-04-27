@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+
+command="/usr/sbin/dropbear"
+command_args="${COMMAND_ARGS}"
+pidfile="/var/run/dropbear.pid"
+
+depend() {
+    use logger dns
+    need net
+    after firewall
+}
+
+start_pre() {
+    if [ ! -d /etc/dropbear ]; then
+        mkdir -p /etc/dropbear
+    fi
+
+    local key_type
+    for key_type in ${KEY_TYPES}; do
+		if [ ! -s /etc/dropbear/dropbear_${key_type}_host_key ]; then
+        	dropbearkey -t ${key_type} -f /etc/dropbear/dropbear_${key_type}_host_key > /dev/null
+		fi
+    done
+}
+
+
+# vim: noet ft=gentoo-init-d

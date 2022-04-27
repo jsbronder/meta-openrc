@@ -1,0 +1,6 @@
+# Any extra arguments to pass to the daemon
+COMMAND_ARGS=""
+
+# Types of keyfiles to generate if they do not already exist
+#   dss, rsa, ecdsa, ed25519
+KEY_TYPES="rsa ed25519"
