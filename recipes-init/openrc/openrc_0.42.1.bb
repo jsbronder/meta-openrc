@@ -23,22 +23,13 @@ EXTRA_OEMAKE = " \
     CONFDIRNAME=$(basename ${OPENRC_CONFDIR}) \
 "
 
-inherit openrc openrc-image
-
 openrc_do_patch() {
     # QA[useless-rpaths]: We don't need an rpath to /lib
     sed -i '/-rpath=/d' ${S}/mk/prog.mk
 
-    # Support busybox swapon
-    sed -i 's|swapon -a -e|swapon -a|' ${S}/init.d/swap.in
-
-    # - Drop keymaps from default runlevel
-    # - Drop netmount from default runlevel, requires umount -O
-    #       https://bugs.busybox.net/show_bug.cgi?id=8566
-    sed -i \
-        -e 's| keymaps | |' \
-        -e 's|^\(DEFAULT=.*\) netmount|\1|' \
-        ${S}/runlevels/Makefile
+    # Default sysvinit doesn't do anything with keymaps on a minimal install
+    # so we're not going to either.
+    sed -i -e 's| keymaps | |' ${S}/runlevels/Makefile
 }
 
 do_patch:append() {
@@ -51,12 +42,21 @@ do_install() {
     # Example code that requires perl.
     rm -r ${D}${prefix}/share/${PN}/support/deptree2dot
 
-    openrc_install_script ${WORKDIR}/volatiles.initd
-    openrc_add_to_boot_runlevel ${D} volatiles
+    install -m 755 ${WORKDIR}/volatiles.initd ${D}${OPENRC_INITDIR}/volatiles
+    ln -snf ${OPENRC_INITDIR}/volatiles ${D}${sysconfdir}/runlevels/boot
+
+    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
+        install -d ${D}${sysconfdir}/openrc
+        mv ${D}${OPENRC_INITDIR} ${D}${sysconfdir}/openrc/$(basename ${OPENRC_INITDIR})
+    fi
 }
 
-RDEPENDS:${PN} := " \
+RDEPENDS:${PN} = " \
+    kbd \
+    procps-sysctl \
     sysvinit \
+    util-linux-mount \
+    util-linux-umount \
 "
 
 FILES:${PN}-dbg:append := " \
