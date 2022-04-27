@@ -1,0 +1,5 @@
+# CONFIG_PATH="/etc/wpa_supplicant.conf"
+
+# Any extra arguments to pass to the daemon aside from the config
+# path and -B (background mode)
+COMMAND_ARGS=""

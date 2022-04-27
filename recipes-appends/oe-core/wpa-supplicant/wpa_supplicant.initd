@@ -1,0 +1,38 @@
+#!/sbin/openrc-run
+
+CONFIG_PATH=${CONFIG_PATH:-/etc/wpa_supplicant.conf}
+
+command="/usr/sbin/wpa_supplicant"
+command_args="-B -c${CONFIG_PATH} ${COMMAND_ARGS}"
+name="WPA Supplicant Daemon"
+
+_need_dbus() {
+	echo "${EXTRA_ARGS}" | grep -q -e '-u'
+}
+
+depend()
+{
+	need localmount
+	use logger
+	after bootmisc modules
+	before dns dhcpcd net
+	keyword -shutdown
+
+	# DBus is only needed if the service was started with the dependency
+	local _need=
+	if service_started; then
+		_need=$(service_get_value need)
+	else
+		if _need_dbus; then
+			_need="${_need} dbus"
+		fi
+	fi
+	need ${_need}
+}
+
+start_pre() {
+	[ ! -d /var/run/wpa_supplicant ] && mkdir -p /var/run/wpa_supplicant
+	return 0
+}
+
+# vim: noet ft=gentoo-init-d
