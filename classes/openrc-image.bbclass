@@ -119,3 +119,24 @@ openrc_replace_inittab() {
 		#s1:12345:respawn:/sbin/agetty -L 115200 ttyS1 vt100
 	EOF
 }
+
+# Like oe-core/meta/classes/rootfs-postcommands, allow dropbear to accept
+# logins from accounts with an empty password string if debug-tweaks or
+# allow-empty-password is enabled.
+ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains_any('IMAGE_FEATURES', ['debug-tweaks', 'allow-empty-password'], 'openrc_ssh_allow_empty_password; ', '', d)}"
+
+openrc_ssh_allow_empty_password() {
+    local confd=${IMAGE_ROOTFS}${OPENRC_CONFDIR}/dropbear
+
+    if [ ! -s "${confd}" ]; then
+        echo 'COMMAND_ARGS="-B"' > ${confd}
+    else
+        if ! grep '^COMMAND_ARGS=".*-B[ \t"]' ${confd}; then
+            # Add -B, Allow blank password logins
+            sed -i 's,COMMAND_ARGS="\([^"]*\)",COMMAND_ARGS="\1 -B",' ${confd}
+        fi
+
+        # Remove -w, Disallow root logins
+        sed -i 's,-w\([ \t"]\),\1,' ${confd}
+    fi
+}
