@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+depend() {
+	use clock
+	need hostname localmount
+	after bootmisc
+	provide klog
+}
+
+command_args="${COMMAND_ARGS}"
+description="busybox kernel logger"
+command="/sbin/klogd"
+
+# vim: noet ft=gentoo-init-d

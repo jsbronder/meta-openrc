@@ -1,0 +1,3 @@
+# Extra arguments to pass to the daemon
+#  -c 4, Print error and higher to console
+COMMAND_ARGS="-c 4"

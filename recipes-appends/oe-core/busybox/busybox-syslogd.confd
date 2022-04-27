@@ -1,0 +1,5 @@
+# Extra arguments to pass to the daemon
+# -s 200, Rotate at 200KB
+# -b 10, Keep 10 rotated logs
+# -D, Drop duplicates
+COMMAND_ARGS="-s 200 -b 10 -D"

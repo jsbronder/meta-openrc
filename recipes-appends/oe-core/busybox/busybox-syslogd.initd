@@ -1,0 +1,14 @@
+#!/sbin/openrc-run
+
+depend() {
+	use clock
+	need hostname localmount
+	after bootmisc
+	provide logger
+}
+
+command_args="${COMMAND_ARGS}"
+description="busybox system logger"
+command="/sbin/syslogd"
+
+# vim: noet ft=gentoo-init-d
