@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+command=/usr/libexec/bluetooth/bluetoothd
+command_args=${COMMAND_ARGS}
+pidfile=/var/run/bluetoothd.pid
+command_background="true"
+
+depend() {
+	after coldplug
+	need dbus localmount hostname
+}
+
+# vim: noet ft=gentoo-init-d
