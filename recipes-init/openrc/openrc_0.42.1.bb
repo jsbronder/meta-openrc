@@ -53,6 +53,7 @@ do_install() {
 
 RDEPENDS:${PN} = " \
     kbd \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc-inittab', '', d)} \
     procps-sysctl \
     sysvinit \
     util-linux-mount \
