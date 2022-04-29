@@ -1,0 +1,32 @@
+# /etc/inittab:  This file describes how the INIT process should set up
+#                the system in a certain run-level.
+
+# Default runlevel.
+id:3:initdefault:
+
+# System initialization, mount local filesystems, etc.
+si::sysinit:/sbin/openrc sysinit
+
+# Further system initialization, brings up the boot runlevel.
+rc::bootwait:/sbin/openrc boot
+
+l0u:0:wait:/sbin/telinit u
+l0:0:wait:/sbin/openrc shutdown
+l0s:0:wait:/sbin/halt -dhp
+l1:S1:wait:/sbin/openrc single
+l2:2:wait:/sbin/openrc nonetwork
+l3:3:wait:/sbin/openrc default
+l4:4:wait:/sbin/openrc default
+l5:5:wait:/sbin/openrc default
+l6u:6:wait:/sbin/telinit u
+l6:6:wait:/sbin/openrc reboot
+l6r:6:wait:/sbin/reboot -d
+#z6:6:respawn:/sbin/sulogin
+
+# new-style single-user
+su0:S:wait:/sbin/openrc single
+su1:S:wait:/sbin/sulogin
+
+# What to do at the "Three Finger Salute".
+ca:12345:ctrlaltdel:/sbin/shutdown -r now
+
