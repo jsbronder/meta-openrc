@@ -52,6 +52,7 @@ RDEPENDS:${PN} = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc-inittab', '', d)} \
     procps-sysctl \
     sysvinit \
+    util-linux-fsck \
     util-linux-mount \
     util-linux-umount \
 "
