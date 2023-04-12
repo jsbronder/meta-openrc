@@ -5,11 +5,19 @@ OPENRC_SERVICES ?= " \
     ${@bb.utils.contains('IMAGE_FEATURES', 'ssh-server-openssh', 'default:sshd', '', d)} \
 "
 
+# Define services that should be disabled for given runlevels as a list of
+# whitespace-separated [runlevel]:[service]
+OPENRC_DISABLED_SERVICES ?= ""
+
+# Define services that should be disabled and removed entirely as a list of
+# whitespace-separated [service]
+OPENRC_DELETED_SERVICES ?= ""
+
 # Define stacked runlevels as a whitespace-separated
 # [stacked runlevel]:[base runlevel]
 OPENRC_STACKED_RUNLEVELS ?= ""
 
-ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc_stack_runlevels; openrc_add_services; ', '', d)}"
+ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc_stack_runlevels; openrc_add_services; openrc_disable_services; openrc_delete_services; ', '', d)}"
 
 openrc_stack_runlevels() {
     local stack
@@ -47,6 +55,34 @@ openrc_add_services() {
             && install -d ${IMAGE_ROOTFS}${sysconfdir}/runlevels/${runlevel}
 
         ln -snf ${OPENRC_INITDIR}/${svc} ${IMAGE_ROOTFS}${sysconfdir}/runlevels/${runlevel}
+    done
+}
+
+openrc_disable_services() {
+    for pair in ${OPENRC_DISABLED_SERVICES}; do
+        runlevel=${pair%%:*}
+        svc=${pair##*:}
+
+        svcfile="${IMAGE_ROOTFS}${sysconfdir}/runlevels/${runlevel}/${svc}"
+        if ! [ -L "$svcfile" ]; then
+            bbfatal "No openrc service named '${svc}' found in runlevel '${runlevel}."
+        fi
+        rm "$svcfile"
+    done
+}
+
+openrc_delete_services() {
+    for svc in ${OPENRC_DELETED_SERVICES}; do
+        svcfile="${IMAGE_ROOTFS}${OPENRC_INITDIR}/${svc}"
+        if ! [ -f "$svcfile" ]; then
+            bbfatal "No openrc service named '${svc}' found."
+        fi
+        rm -f "$svcfile" "${IMAGE_ROOTFS}${OPENRC_CONFDIR}/${svc}"
+        for rundir in "${IMAGE_ROOTFS}${sysconfdir}/runlevels/"*; do
+            if [ -L "$rundir/$svc" ] && ! [ -f "$rundir/$svc" ]; then
+                rm "$rundir/$svc"
+            fi
+        done
     done
 }
 
