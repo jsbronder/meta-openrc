@@ -8,6 +8,7 @@ depend() {
 }
 
 command_args="${COMMAND_ARGS}"
+command_args_foreground="-n"
 description="busybox kernel logger"
 command="/sbin/klogd"
 
