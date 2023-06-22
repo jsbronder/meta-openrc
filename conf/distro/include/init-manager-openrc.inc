@@ -6,5 +6,6 @@ VIRTUAL-RUNTIME_initscripts ??= "openrc"
 VIRTUAL-RUNTIME_login_manager ??= "busybox"
 VIRTUAL-RUNTIME_dev_manager ??= "busybox-mdev"
 VIRTUAL-RUNTIME_keymaps ??= "openrc"
-# The default, busybox-hwclock, just installs an init script duplicating openrc's
-VIRTUAL-RUNTIME_base-utils-hwclock ?= "openrc"
+
+# Direct assignment as this is loaded after oe-core's default-providers.inc
+VIRTUAL-RUNTIME_base-utils-hwclock = "openrc"
