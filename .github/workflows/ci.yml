@@ -58,6 +58,7 @@ jobs:
           echo 'BB_HASHSERVE = "auto"' >> conf/local.conf
           echo 'BB_HASHSERVE_UPSTREAM = "hashserv.yocto.io:8687"' >> conf/local.conf
           echo 'DISTRO_FEATURES += "openrc"' >> conf/local.conf
+          echo 'BB_DISKMON_DIRS = "STOPTASKS,${TMPDIR},100M,10K HALT,${TMPDIR},50M,5k"' >> conf/local.conf
           bitbake-layers add-layer ../meta-openrc
       - name: Build operc image
         run: |
