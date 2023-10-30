@@ -47,7 +47,7 @@ jobs:
             sstate-openrc-
             sstate-
       - name: Clone Poky
-        run: git clone -b ${{ env.OE_BRANCH }} git://git.yoctoproject.org/poky
+        run: git clone -b ${{ env.OE_BRANCH }} https://git.yoctoproject.org/poky
       - name: Initialize build directory
         run: |
           source poky/oe-init-build-env build
