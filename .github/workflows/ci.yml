@@ -37,11 +37,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: meta-openrc
-      - name: Shared-State Cache
-        uses: actions/cache@v3
+      - name: Restore Shared-State Cache
+        uses: actions/cache/restore@v3
         with:
-          path: |
-            build/sstate-cache
+          path: build/sstate-cache
           key: sstate-openrc-${{ env.OE_BRANCH }}-${{ github.sha }}
           restore-keys: |
             sstate-openrc-${{ env.OE_BRANCH }}
@@ -64,13 +63,21 @@ jobs:
         run: |
           source poky/oe-init-build-env build
           bitbake openrc-image
-      - name: Prune Shared-State Cache
+      - name: Prune Shared-State Cache and tmpdir
+        if: always()
         run: |
           source poky/oe-init-build-env build
           du -sh sstate-cache
           sstate-cache-management.sh --yes --cache-dir=sstate-cache --remove-duplicated
           sstate-cache-management.sh --yes --cache-dir=sstate-cache --stamps-dir=tmp/stamps
           du -sh sstate-cache
+          rm -r tmp/
+      - name: Save Shared-State Cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: build/sstate-cache
+          key: sstate-openrc-${{ env.OE_BRANCH }}-${{ github.sha }}
 
   yocto-check-layer:
     name: yocto-check-layer
