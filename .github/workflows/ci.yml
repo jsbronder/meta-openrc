@@ -77,8 +77,8 @@ jobs:
         run: |
           source poky/oe-init-build-env build
           du -sh sstate-cache
-          sstate-cache-management.sh --yes --cache-dir=sstate-cache --remove-duplicated
-          sstate-cache-management.sh --yes --cache-dir=sstate-cache --stamps-dir=tmp/stamps
+          sstate-cache-management.py --yes --cache-dir=sstate-cache --remove-duplicated
+          sstate-cache-management.py --yes --cache-dir=sstate-cache --stamps-dir=tmp/stamps
           du -sh sstate-cache
           rm -r tmp/
       - name: Save Shared-State Cache
