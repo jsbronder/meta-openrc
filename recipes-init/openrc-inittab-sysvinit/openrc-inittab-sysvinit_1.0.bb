@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 SRC_URI = "file://inittab.in"
 S = "${WORKDIR}"
-RPROVIDES:${PN} = "${@oe.utils.conditional('VIRTUAL-RUNTIME_init_manager', 'sysvinit', 'virtual/openrc-inittab', '', d)}"
+RPROVIDES:${PN} = "${@oe.utils.conditional('VIRTUAL-RUNTIME_init_manager', 'sysvinit', 'virtual-openrc-inittab', '', d)}"
 
 INHIBIT_DEFAULT_DEPS = "1"
 

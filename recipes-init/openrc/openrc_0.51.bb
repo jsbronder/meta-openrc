@@ -91,7 +91,7 @@ PACKAGES =+ "${PN}-init"
 
 RDEPENDS:${PN} = " \
     kbd \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'virtual/openrc-inittab', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'virtual-openrc-inittab', '', d)} \
     procps-sysctl \
     ${VIRTUAL-RUNTIME_init_manager} \
     util-linux-fsck \
@@ -108,7 +108,7 @@ RCONFLICTS:${PN}-init = " \
 "
 
 RPROVIDES:${PN}-init = " \
-    ${@oe.utils.conditional('VIRTUAL-RUNTIME_init_manager', d.expand('${PN}-init'), 'virtual/openrc-inittab', '', d)} \
+    ${@oe.utils.conditional('VIRTUAL-RUNTIME_init_manager', d.expand('${PN}-init'), 'virtual-openrc-inittab', '', d)} \
 "
 
 FILES:${PN}-doc:append = " ${datadir}/${BPN}/support"
