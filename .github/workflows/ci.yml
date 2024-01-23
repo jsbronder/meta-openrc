@@ -59,7 +59,7 @@ jobs:
           echo 'INHERIT += "rm_work"' >> conf/local.conf
           echo 'DISTRO_FEATURES:remove = "alsa bluetooth usbgadget zeroconf 3g nfc x11 opengl ptest wayland vulkan gobject-introspection-data"' >> conf/local.conf
           echo 'BB_SIGNATURE_HANDLER = "OEEquivHash"' >> conf/local.conf
-          echo 'SSTATE_MIRRORS += "file://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH"' >> conf/local.conf
+          echo 'SSTATE_MIRRORS += "file://.* http://cdn.jsdelivr.net/yocto/sstate/all/PATH;downloadfilename=PATH"' >> conf/local.conf
           echo 'BB_HASHSERVE = "auto"' >> conf/local.conf
           echo 'BB_HASHSERVE_UPSTREAM = "hashserv.yocto.io:8687"' >> conf/local.conf
           echo 'BB_DISKMON_DIRS = "STOPTASKS,${TMPDIR},100M,10K HALT,${TMPDIR},50M,5k"' >> conf/local.conf
