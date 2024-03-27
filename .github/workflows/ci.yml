@@ -73,6 +73,10 @@ jobs:
       - name: Build operc image
         run: |
           source poky/oe-init-build-env build
+          # Build in stages so we can wipe tmp in between to stay under the
+          # 14Gb of disk Github gives us.  rm_work isn't sufficient.
+          bitbake virtual/kernel
+          rm -rf tmp/
           bitbake openrc-image
       - name: Prune Shared-State Cache and tmpdir
         if: always()
