@@ -58,7 +58,7 @@ jobs:
         run: |
           source poky/oe-init-build-env build
           bitbake-layers add-layer ../meta-openrc
-          echo 'INHERIT += "rm_work"' >> conf/local.conf
+          echo 'INHERIT += "rm_work_and_downloads"' >> conf/local.conf
           echo 'DISTRO_FEATURES:remove = "alsa bluetooth usbgadget zeroconf 3g nfc x11 opengl ptest wayland vulkan gobject-introspection-data"' >> conf/local.conf
           echo 'BB_SIGNATURE_HANDLER = "OEEquivHash"' >> conf/local.conf
           echo 'SSTATE_MIRRORS += "file://.* http://cdn.jsdelivr.net/yocto/sstate/all/PATH;downloadfilename=PATH"' >> conf/local.conf
