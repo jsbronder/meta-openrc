@@ -7,12 +7,14 @@ on:
       - kirkstone
       - mickledore
       - nanbield
+      - scarthgap
   pull_request:
     branches:
       - master
       - kirkstone
       - mickledore
       - nanbield
+      - scarthgap
   schedule:
     - cron: 11 2 * * 0
 
