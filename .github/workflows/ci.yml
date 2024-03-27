@@ -70,9 +70,13 @@ jobs:
           else
             echo 'DISTRO_FEATURES += "openrc"' >> conf/local.conf
           fi
-      - name: Build operc image
+      - name: Build openrc image
         run: |
           source poky/oe-init-build-env build
+          # Build in stages so we can wipe tmp in between to stay under the
+          # 14Gb of disk Github gives us.  rm_work isn't sufficient.
+          bitbake openrc
+          rm -rf tmp/
           bitbake openrc-image
       - name: Prune Shared-State Cache and tmpdir
         if: always()
