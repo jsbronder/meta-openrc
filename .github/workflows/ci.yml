@@ -44,7 +44,7 @@ jobs:
         with:
           path: meta-openrc
       - name: Restore Shared-State Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: build/sstate-cache
           key: sstate-openrc-${{ env.OE_BRANCH }}-${{ github.sha }}
@@ -85,7 +85,7 @@ jobs:
           rm -r tmp/
       - name: Save Shared-State Cache
         if: always()
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: build/sstate-cache
           key: sstate-openrc-${{ env.OE_BRANCH }}-${{ github.sha }}
