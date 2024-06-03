@@ -7,6 +7,6 @@ inherit openrc
 OPENRC_SERVICES:${PN} = "named"
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/named.initd
-    openrc_install_confd ${WORKDIR}/named.confd
+    openrc_install_initd ${UNPACKDIR}/named.initd
+    openrc_install_confd ${UNPACKDIR}/named.confd
 }

@@ -7,6 +7,6 @@ inherit openrc
 OPENRC_SERVICES = "bluetooth"
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/bluetooth.initd
-    openrc_install_confd ${WORKDIR}/bluetooth.confd
+    openrc_install_initd ${UNPACKDIR}/bluetooth.initd
+    openrc_install_confd ${UNPACKDIR}/bluetooth.confd
 }

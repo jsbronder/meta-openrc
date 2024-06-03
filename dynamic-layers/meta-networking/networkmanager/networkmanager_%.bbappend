@@ -9,5 +9,5 @@ LICENSE += "${@bb.utils.contains('DISTRO_FEATURES', 'openrc', '& GPL-2.0-only', 
 inherit openrc
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/networkmanager.initd
+    openrc_install_initd ${UNPACKDIR}/networkmanager.initd
 }

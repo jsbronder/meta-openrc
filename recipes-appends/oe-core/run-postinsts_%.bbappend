@@ -14,7 +14,7 @@ do_install:append() {
         -e 's,update-rc.d -f run-postinsts remove,rc-update del run-postinsts boot,' \
         ${D}${sbindir}/run-postinsts
 
-    openrc_install_initd ${WORKDIR}/run-postinsts.initd
+    openrc_install_initd ${UNPACKDIR}/run-postinsts.initd
     install -d ${D}${sysconfdir}/runlevels/boot
     ln -snf ${OPENRC_INITDIR}/run-postinsts ${D}${sysconfdir}/runlevels/boot
 }

@@ -8,5 +8,5 @@ OPENRC_PACKAGES = "bootchartd-stop-initscript"
 OPENRC_SERVICES:bootchartd-stop-initscript = "bootchart2"
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/bootchart2.initd
+    openrc_install_initd ${UNPACKDIR}/bootchart2.initd
 }

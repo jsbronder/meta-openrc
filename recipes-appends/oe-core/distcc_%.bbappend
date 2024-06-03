@@ -8,6 +8,6 @@ OPENRC_PACKAGES = "${PN}-server"
 OPENRC_SERVICES:${PN}-server = "distcc"
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/distcc.initd
-    openrc_install_confd ${WORKDIR}/distcc.confd
+    openrc_install_initd ${UNPACKDIR}/distcc.initd
+    openrc_install_confd ${UNPACKDIR}/distcc.confd
 }

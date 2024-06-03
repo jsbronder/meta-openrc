@@ -10,9 +10,9 @@ do_install:append() {
     fi
 
     install -d ${D}${OPENRC_INITDIR}
-    install -m 0755 ${WORKDIR}/dropbear.initd ${D}${OPENRC_INITDIR}/dropbear
+    install -m 0755 ${UNPACKDIR}/dropbear.initd ${D}${OPENRC_INITDIR}/dropbear
     sed -i 's,@SBINDIR@,${sbindir},' ${D}${OPENRC_INITDIR}/dropbear
 
     install -d ${D}${OPENRC_CONFDIR}
-    install -m 0644 ${WORKDIR}/dropbear.confd ${D}${OPENRC_CONFDIR}/dropbear
+    install -m 0644 ${UNPACKDIR}/dropbear.confd ${D}${OPENRC_CONFDIR}/dropbear
 }

@@ -5,6 +5,6 @@ SRC_URI += "file://nginx.initd file://nginx.confd"
 inherit openrc
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/nginx.initd
-    openrc_install_confd ${WORKDIR}/nginx.confd
+    openrc_install_initd ${UNPACKDIR}/nginx.initd
+    openrc_install_confd ${UNPACKDIR}/nginx.confd
 }

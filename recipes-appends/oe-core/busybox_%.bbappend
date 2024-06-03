@@ -36,7 +36,7 @@ do_install:append() {
 
     local svc
     for svc in acpid cron klogd httpd inetd mdev ntpd syslogd udhcpd; do
-        openrc_install_initd ${WORKDIR}/busybox-${svc}.initd
-        openrc_install_confd ${WORKDIR}/busybox-${svc}.confd
+        openrc_install_initd ${UNPACKDIR}/busybox-${svc}.initd
+        openrc_install_confd ${UNPACKDIR}/busybox-${svc}.confd
     done
 }

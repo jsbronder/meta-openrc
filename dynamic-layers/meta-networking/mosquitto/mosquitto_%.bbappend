@@ -8,6 +8,6 @@ SRC_URI:append = " \
 inherit openrc
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/mosquitto.initd
-    openrc_install_confd ${WORKDIR}/mosquitto.confd
+    openrc_install_initd ${UNPACKDIR}/mosquitto.initd
+    openrc_install_confd ${UNPACKDIR}/mosquitto.confd
 }

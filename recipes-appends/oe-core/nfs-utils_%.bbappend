@@ -31,16 +31,16 @@ OPENRC_SERVICES:${PN} = "nfs rpc.svcgssd"
 OPENRC_SERVICES:${PN}-client = "nfsclient rpc.statd rpc.idmapd rpc.gssd rpc.pipefs"
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/nfs.initd
-    openrc_install_confd ${WORKDIR}/nfs.confd
-    openrc_install_initd ${WORKDIR}/rpc.svcgssd.initd
+    openrc_install_initd ${UNPACKDIR}/nfs.initd
+    openrc_install_confd ${UNPACKDIR}/nfs.confd
+    openrc_install_initd ${UNPACKDIR}/rpc.svcgssd.initd
 
-    openrc_install_initd ${WORKDIR}/nfsclient.initd
-    openrc_install_confd ${WORKDIR}/nfsclient.confd
-    openrc_install_initd ${WORKDIR}/rpc.statd.initd
-    openrc_install_initd ${WORKDIR}/rpc.idmapd.initd
-    openrc_install_initd ${WORKDIR}/rpc.gssd.initd
-    openrc_install_initd ${WORKDIR}/rpc.pipefs.initd
+    openrc_install_initd ${UNPACKDIR}/nfsclient.initd
+    openrc_install_confd ${UNPACKDIR}/nfsclient.confd
+    openrc_install_initd ${UNPACKDIR}/rpc.statd.initd
+    openrc_install_initd ${UNPACKDIR}/rpc.idmapd.initd
+    openrc_install_initd ${UNPACKDIR}/rpc.gssd.initd
+    openrc_install_initd ${UNPACKDIR}/rpc.pipefs.initd
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
         sed -i "s,=/sbin/rpc.statd,=${sbindir}/rpc.statd," ${D}${OPENRC_INITDIR}/rpc.statd

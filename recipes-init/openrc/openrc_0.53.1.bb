@@ -53,8 +53,8 @@ do_install:append() {
     rm ${D}${sysconfdir}/runlevels/*/keymaps
 
     for svc in getty volatiles; do
-        install -m 755 ${WORKDIR}/${svc}.initd ${D}${OPENRC_INITDIR}/${svc}
-        ! [ -f ${WORKDIR}/${svc}.confd ] || install -m 644 ${WORKDIR}/${svc}.confd ${D}${OPENRC_CONFDIR}/${svc}
+        install -m 755 ${UNPACKDIR}/${svc}.initd ${D}${OPENRC_INITDIR}/${svc}
+        ! [ -f ${UNPACKDIR}/${svc}.confd ] || install -m 644 ${UNPACKDIR}/${svc}.confd ${D}${OPENRC_CONFDIR}/${svc}
         sed -i "s|/sbin/openrc-run|${openrc_sbindir}/openrc-run|" ${D}${OPENRC_INITDIR}/${svc}
     done
     ln -snf ${OPENRC_INITDIR}/volatiles ${D}${sysconfdir}/runlevels/boot

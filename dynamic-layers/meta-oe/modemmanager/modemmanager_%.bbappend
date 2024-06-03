@@ -8,6 +8,6 @@ SRC_URI:append = " \
 inherit openrc
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/modemmanager.initd
-    openrc_install_confd ${WORKDIR}/modemmanager.confd
+    openrc_install_initd ${UNPACKDIR}/modemmanager.initd
+    openrc_install_confd ${UNPACKDIR}/modemmanager.confd
 }

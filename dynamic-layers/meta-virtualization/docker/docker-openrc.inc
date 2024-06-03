@@ -10,6 +10,6 @@ inherit openrc
 OPENRC_SERVICES = "docker"
 
 do_install:append() {
-    openrc_install_initd ${WORKDIR}/docker.initd
-    openrc_install_confd ${WORKDIR}/docker.confd
+    openrc_install_initd ${UNPACKDIR}/docker.initd
+    openrc_install_confd ${UNPACKDIR}/docker.confd
 }
