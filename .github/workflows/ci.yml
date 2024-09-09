@@ -8,6 +8,7 @@ on:
       - mickledore
       - nanbield
       - scarthgap
+      - styhead
   pull_request:
     branches:
       - master
@@ -15,6 +16,7 @@ on:
       - mickledore
       - nanbield
       - scarthgap
+      - styhead
   schedule:
     - cron: 11 2 * * 0
 
