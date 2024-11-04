@@ -40,7 +40,7 @@ jobs:
           fi
       - name: Install required packages
         run: |
-          sudo apt-get install diffstat
+          sudo apt-get install diffstat python3-websockets
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -65,7 +65,7 @@ jobs:
           echo 'BB_SIGNATURE_HANDLER = "OEEquivHash"' >> conf/local.conf
           echo 'SSTATE_MIRRORS += "file://.* http://cdn.jsdelivr.net/yocto/sstate/all/PATH;downloadfilename=PATH"' >> conf/local.conf
           echo 'BB_HASHSERVE = "auto"' >> conf/local.conf
-          echo 'BB_HASHSERVE_UPSTREAM = "hashserv.yocto.io:8687"' >> conf/local.conf
+          echo 'BB_HASHSERVE_UPSTREAM = "wss://hashserv.yoctoproject.org/ws"' >> conf/local.conf
           echo 'BB_DISKMON_DIRS = "STOPTASKS,${TMPDIR},100M,10K HALT,${TMPDIR},50M,5k"' >> conf/local.conf
           if [ ${{ env.OE_BRANCH }} != "kirkstone" ]; then
             echo 'INIT_MANAGER = "openrc"' >> conf/local.conf
