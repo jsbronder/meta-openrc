@@ -23,7 +23,7 @@ on:
 jobs:
   build:
     name: build openrc-image
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 720
     steps:
       - name: Configure Environment [branch]
@@ -38,9 +38,10 @@ jobs:
           else
             echo 'OE_BRANCH='${{ github.base_ref}} >> $GITHUB_ENV
           fi
-      - name: Install required packages
+      - name: Configure Host
         run: |
-          sudo apt-get install diffstat
+          sudo apt-get install chrpath diffstat
+          echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Checkout
         uses: actions/checkout@v4
         with:
