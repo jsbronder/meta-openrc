@@ -87,9 +87,9 @@ openrc_delete_services() {
 }
 
 # Like oe-core/meta/classes/rootfs-postcommands, allow dropbear to accept
-# logins from accounts with an empty password string if debug-tweaks or
-# allow-empty-password is enabled.
-ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains_any('IMAGE_FEATURES', ['debug-tweaks', 'allow-empty-password'], 'openrc_ssh_allow_empty_password; ', '', d)}"
+# logins from accounts with an empty password string if allow-empty-password is
+# enabled.
+ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('IMAGE_FEATURES', 'allow-empty-password', 'openrc_ssh_allow_empty_password; ', '', d)}"
 
 openrc_ssh_allow_empty_password() {
     local confd=${IMAGE_ROOTFS}${OPENRC_CONFDIR}/dropbear
