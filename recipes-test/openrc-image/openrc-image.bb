@@ -20,8 +20,8 @@ inherit core-image openrc-image
 # runlevel stacking and adding of services is functioning correctly.
 OPENRC_STACKED_RUNLEVELS += "logging:default"
 OPENRC_SERVICES += " \
-    sysinit:udev-trigger \
-    default:udev-settle \
+    ${@oe.utils.conditional('VIRTUAL-RUNTIME_dev_manager', 'udev', 'sysinit:udev-trigger default:udev-settle', '', d)} \
+    ${@oe.utils.conditional('VIRTUAL-RUNTIME_dev_manager', 'busybox-mdev', 'sysinit:busybox-mdev', '', d)} \
     logging:busybox-klogd \
     logging:busybox-syslogd \
 "
