@@ -5,9 +5,24 @@ depend() {
 	before checkfs fsck
 }
 
-command_args="-df ${COMMAND_ARGS}"
-command_background="true"
-pidfile="/var/run/busybox-mdev.pid"
-command="/sbin/mdev"
+start() {
+	if [ -e /proc/sys/kernel/hotplug ]; then
+		ebegin "Registering mdev as hotplug agent"
+		echo "/sbin/mdev" > /proc/sys/kernel/hotplug
+		eend $?
+	fi
+
+	ebegin "Populating /dev with mdev"
+	/sbin/mdev -s ${COMMAND_ARGS}
+	eend $?
+}
+
+stop() {
+	if [ -e /proc/sys/kernel/hotplug ]; then
+		ebegin "Removing mdev as hotplug agent"
+		echo "/sbin/mdev" > /proc/sys/kernel/hotplug
+		eend $?
+	fi
+}
 
 # vim: noet ft=gentoo-init-d
