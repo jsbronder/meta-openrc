@@ -1,2 +1,2 @@
 # Extra arguments to pass to the daemon
-COMMAND_ARGS="-s -S"
+COMMAND_ARGS="-S"
