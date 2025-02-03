@@ -64,10 +64,10 @@ do_install:append() {
         mv ${D}${OPENRC_INITDIR} ${D}${sysconfdir}/openrc/$(basename ${OPENRC_INITDIR})
     fi
 
-    if ${@bb.utils.contains('PACKAGECONFIG', 'usrmerge', 'true', 'false', d)}; then
-        if [ -f ${D}${openrc_sbindir}/start-stop-daemon ]; then
-            mv ${D}${openrc_sbindir}/start-stop-daemon ${D}${openrc_sbindir}/start-stop-daemon.openrc
-        fi
+    # Match path used by alternatives: busybox/dpkg
+    if [ ! -f ${D}${sbindir}/start-stop-daemon ]; then
+        install -d ${D}${sbindir}
+        mv ${D}${openrc_sbindir}/start-stop-daemon ${D}${sbindir}
     fi
 
     # Remove bonus TTY scripts installed when -Dsysvinit=true is selected, and add the correct ones.
@@ -133,7 +133,7 @@ inherit update-alternatives
 ALTERNATIVE_PRIORITY = "100"
 ALTERNATIVE:${PN} = "start-stop-daemon"
 ALTERNATIVE:${PN}-init = "init halt poweroff reboot shutdown"
-ALTERNATIVE_LINK_NAME[start-stop-daemon] = "${openrc_sbindir}/start-stop-daemon"
+ALTERNATIVE_LINK_NAME[start-stop-daemon] = "${sbindir}/start-stop-daemon"
 ALTERNATIVE_LINK_NAME[init] = "${openrc_sbindir}/init"
 ALTERNATIVE_LINK_NAME[halt] = "${openrc_sbindir}/halt"
 ALTERNATIVE_LINK_NAME[poweroff] = "${openrc_sbindir}/poweroff"
