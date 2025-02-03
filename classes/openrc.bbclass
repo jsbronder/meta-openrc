@@ -20,7 +20,7 @@ python __anonymous() {
 
 openrc_postinst() {
     if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        return
+        exit 0
     fi
 
     if [ "${OPENRC_AUTO_ENABLE}" = "enable" ]; then
@@ -42,7 +42,7 @@ openrc_postinst() {
 
 openrc_prerm() {
     if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        return
+        exit 0
     fi
 
     for script in ${OPENRC_SERVICES}; do
