@@ -9,6 +9,7 @@ on:
       - nanbield
       - scarthgap
       - styhead
+      - walnascar
   pull_request:
     branches:
       - master
@@ -17,6 +18,7 @@ on:
       - nanbield
       - scarthgap
       - styhead
+      - walnascar
   schedule:
     - cron: 11 2 * * 0
 
