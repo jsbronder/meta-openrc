@@ -7,6 +7,11 @@ IMAGE_INSTALL += " \
     packagegroup-core-boot \
 "
 
+# In styhead, packagegroup-core-boot is fixed to not unilaterally set
+# VIRTUAL-RUNTIME_dev_manager to udev locally, but here we need to add the
+# dependency in case it's not udev.
+IMAGE_INSTALL += "${@oe.utils.conditional('VIRTUAL-RUNTIME_dev_manager', 'busybox-mdev', 'busybox-mdev', '', d)}"
+
 IMAGE_BASENAME := "openrc"
 
 inherit core-image openrc-image
