@@ -1,7 +1,7 @@
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=18590035fb3f5120d3a5e4b781f9ae25"
 
-SRCREV = "596fbd6395f0eef099c8a86a49815f95192b9826"
+SRCREV = "fec22aaac8bad393b372175130d184b74a61d2b2"
 
 SRC_URI = " \
     git://github.com/openrc/openrc.git;nobranch=1;protocol=https \
@@ -12,22 +12,23 @@ SRC_URI = " \
 
 S = "${WORKDIR}/git"
 
+DEPENDS += "libcap"
+
 inherit pkgconfig meson
 
-PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'audit pam selinux usrmerge', d)}"
+PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'audit pam selinux', d)}"
 
 PACKAGECONFIG[audit] = "-Daudit=enabled,-Daudit=disabled,audit"
 PACKAGECONFIG[bash-completions] = "-Dbash-completions=true,-Dbash-completions=false,bash-completion"
-PACKAGECONFIG[capabilities] = "-Dcapabilities=enabled,-Dcapabilities=disabled,libcap"
 PACKAGECONFIG[pam] = "-Dpam=true,-Dpam=false,libpam"
 PACKAGECONFIG[selinux] = "-Dselinux=enabled,-Dselinux=disabled,libselinux"
-PACKAGECONFIG[usrmerge] = "-Drootprefix=/usr,-Drootprefix=/"
 PACKAGECONFIG[zsh-completions] = "-Dzsh-completions=true,-Dzsh-completions=false"
 
-openrc_sbindir = "${@bb.utils.contains('PACKAGECONFIG', 'usrmerge', '${sbindir}', '${base_sbindir}', d)}"
-openrc_libdir = "${@bb.utils.contains('PACKAGECONFIG', 'usrmerge', '${libdir}', '${base_libdir}', d)}"
-
 EXTRA_OEMESON += " \
+    --bindir ${base_bindir} \
+    --sbindir ${base_sbindir} \
+    --libdir ${base_libdir} \
+    --libexecdir ${libexecdir} \
     -Dos=Linux \
     -Dpkg_prefix=${prefix} \
     -Dsysvinit=true \
@@ -55,8 +56,8 @@ do_install:append() {
 
     for svc in getty volatiles; do
         install -m 755 ${UNPACKDIR}/${svc}.initd ${D}${OPENRC_INITDIR}/${svc}
+        sed -i "1s,.*,#\!${base_sbindir}/openrc-run," ${D}${OPENRC_INITDIR}/${svc}
         ! [ -f ${UNPACKDIR}/${svc}.confd ] || install -m 644 ${UNPACKDIR}/${svc}.confd ${D}${OPENRC_CONFDIR}/${svc}
-        sed -i "s|/sbin/openrc-run|${openrc_sbindir}/openrc-run|" ${D}${OPENRC_INITDIR}/${svc}
     done
     ln -snf ${OPENRC_INITDIR}/volatiles ${D}${sysconfdir}/runlevels/boot
 
@@ -65,10 +66,15 @@ do_install:append() {
         mv ${D}${OPENRC_INITDIR} ${D}${sysconfdir}/openrc/$(basename ${OPENRC_INITDIR})
     fi
 
-    # Match path used by alternatives: busybox/dpkg
-    if [ ! -f ${D}${sbindir}/start-stop-daemon ]; then
-        install -d ${D}${sbindir}
-        mv ${D}${openrc_sbindir}/start-stop-daemon ${D}${sbindir}
+    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'usrmerge', 'true', 'false', d)}; then
+        install -d ${D}${libdir}
+        mv ${D}${base_libdir}/pkgconfig ${D}${libdir}/
+
+        # Match path used by alternatives: busybox/dpkg
+        if [ ! -f ${D}${sbindir}/start-stop-daemon ]; then
+            install -d ${D}${sbindir}
+            mv ${D}${base_sbindir}/start-stop-daemon ${D}${sbindir}
+        fi
     fi
 
     # Remove bonus TTY scripts installed when -Dsysvinit=true is selected, and add the correct ones.
@@ -113,15 +119,15 @@ RPROVIDES:${PN}-init = " \
 "
 
 FILES:${PN}-doc:append = " ${datadir}/${BPN}/support"
-FILES:${PN}:append = " ${openrc_libdir}/rc/"
+FILES:${PN}:append = " ${libdir}/rc/"
 FILES:${PN}-init = " \
-    ${openrc_sbindir}/init \
-    ${openrc_sbindir}/halt \
-    ${openrc_sbindir}/poweroff \
-    ${openrc_sbindir}/reboot \
-    ${openrc_sbindir}/shutdown \
-    ${openrc_sbindir}/openrc-init \
-    ${openrc_sbindir}/openrc-shutdown \
+    ${base_sbindir}/init \
+    ${base_sbindir}/halt \
+    ${base_sbindir}/poweroff \
+    ${base_sbindir}/reboot \
+    ${base_sbindir}/shutdown \
+    ${base_sbindir}/openrc-init \
+    ${base_sbindir}/openrc-shutdown \
     ${OPENRC_CONFDIR}/getty \
     ${OPENRC_CONFDIR}/getty.* \
     ${OPENRC_INITDIR}/getty \
@@ -135,8 +141,8 @@ ALTERNATIVE_PRIORITY = "100"
 ALTERNATIVE:${PN} = "start-stop-daemon"
 ALTERNATIVE:${PN}-init = "init halt poweroff reboot shutdown"
 ALTERNATIVE_LINK_NAME[start-stop-daemon] = "${sbindir}/start-stop-daemon"
-ALTERNATIVE_LINK_NAME[init] = "${openrc_sbindir}/init"
-ALTERNATIVE_LINK_NAME[halt] = "${openrc_sbindir}/halt"
-ALTERNATIVE_LINK_NAME[poweroff] = "${openrc_sbindir}/poweroff"
-ALTERNATIVE_LINK_NAME[reboot] = "${openrc_sbindir}/reboot"
-ALTERNATIVE_LINK_NAME[shutdown] = "${openrc_sbindir}/shutdown"
+ALTERNATIVE_LINK_NAME[init] = "${base_sbindir}/init"
+ALTERNATIVE_LINK_NAME[halt] = "${base_sbindir}/halt"
+ALTERNATIVE_LINK_NAME[poweroff] = "${base_sbindir}/poweroff"
+ALTERNATIVE_LINK_NAME[reboot] = "${base_sbindir}/reboot"
+ALTERNATIVE_LINK_NAME[shutdown] = "${base_sbindir}/shutdown"
