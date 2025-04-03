@@ -5,14 +5,6 @@ SRC_URI += "file://dropbear.initd file://dropbear.confd"
 inherit openrc
 
 do_install:append() {
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        return
-    fi
-
-    install -d ${D}${OPENRC_INITDIR}
-    install -m 0755 ${UNPACKDIR}/dropbear.initd ${D}${OPENRC_INITDIR}/dropbear
-    sed -i 's,@SBINDIR@,${sbindir},' ${D}${OPENRC_INITDIR}/dropbear
-
-    install -d ${D}${OPENRC_CONFDIR}
-    install -m 0644 ${UNPACKDIR}/dropbear.confd ${D}${OPENRC_CONFDIR}/dropbear
+    openrc_install_initd ${UNPACKDIR}/dropbear.initd
+    openrc_install_confd ${UNPACKDIR}/dropbear.confd
 }
