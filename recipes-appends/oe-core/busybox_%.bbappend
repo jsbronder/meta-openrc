@@ -30,10 +30,6 @@ OPENRC_SERVICES = "busybox-acpid busybox-cron busybox-inetd busybox-klogd busybo
 OPENRC_SERVICES:${PN}-syslog = "busybox-syslogd"
 
 do_install:append() {
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        return
-    fi
-
     local svc
     for svc in acpid cron klogd httpd inetd mdev ntpd syslogd udhcpd; do
         openrc_install_initd ${UNPACKDIR}/busybox-${svc}.initd
