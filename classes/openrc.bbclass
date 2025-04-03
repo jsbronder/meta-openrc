@@ -140,6 +140,7 @@ python clean_initd() {
     if not openrc_initdir.is_dir():
         return
 
+    req_shebang = "#!%s/openrc-run" % (d.getVar("base_sbindir"),)
     for path in openrc_initdir.iterdir():
         if path.name == "functions.sh":
             continue
@@ -147,7 +148,7 @@ python clean_initd() {
         with path.open() as fp:
             shebang = fp.readline().strip()
 
-        if shebang != "#!/sbin/openrc-run":
+        if shebang != req_shebang:
             bb.debug(1, f"Removing {path} from openrc's initdir")
             path.unlink()
 }
@@ -173,6 +174,7 @@ openrc_install_initd() {
     for path in $*; do
         svc=$(basename ${path%\.initd})
         install -m 755 ${path} ${D}${OPENRC_INITDIR}/${svc}
+        sed -i "1s,.*,#\!${base_sbindir}/openrc-run," ${D}${OPENRC_INITDIR}/${svc}
     done
 }
 
