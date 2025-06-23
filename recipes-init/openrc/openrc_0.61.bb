@@ -10,8 +10,6 @@ SRC_URI = " \
     file://getty.initd \
 "
 
-S = "${WORKDIR}/git"
-
 DEPENDS += "libcap"
 
 inherit pkgconfig meson
