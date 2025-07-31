@@ -29,7 +29,7 @@ openrc_postinst() {
         fi
 
         for script in ${OPENRC_SERVICES}; do
-            ln -s ${OPENRC_INITDIR}/${script} $D${sysconfdir}/runlevels/${OPENRC_RUNLEVEL}/
+            ln -sf ${OPENRC_INITDIR}/${script} $D${sysconfdir}/runlevels/${OPENRC_RUNLEVEL}/
         done
     fi
 
