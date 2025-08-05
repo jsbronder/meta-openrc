@@ -12,20 +12,36 @@ OPENRC_RUNLEVEL ??= "default"
 RDEPENDS:${PN}:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc', '', d)}"
 
 python __anonymous() {
+    # Return early if openrc is not in DISTRO_FEATURES
+    if not bb.utils.contains('DISTRO_FEATURES', 'openrc', True, False, d):
+        return
+
     # Inhibit update-rc.d from doing anything as the contents of /etc/init.d
     # will be managed by openrc
-    if bb.utils.contains('DISTRO_FEATURES', 'openrc', True, False, d):
-        d.setVar("INHIBIT_UPDATERCD_BBCLASS", "1")
+    d.setVar("INHIBIT_UPDATERCD_BBCLASS", "1")
+
+    # Add vardeps for per-service runlevels
+    openrc_packages = d.getVar('OPENRC_PACKAGES')
+    for pkg in openrc_packages.split():
+        d.appendVarFlag('openrc_populate_packages', 'vardeps', f' OPENRC_SERVICES:{pkg}')
+        services = d.getVar(f'OPENRC_SERVICES:{pkg}') or d.getVar('OPENRC_SERVICES') or pkg
+        for service in services.split():
+            d.appendVarFlag('openrc_populate_packages', 'vardeps', f' OPENRC_RUNLEVEL:{service}')
 }
 
 openrc_postinst() {
     if [ "${OPENRC_AUTO_ENABLE}" = "enable" ]; then
-        if [ ! -d "$D${sysconfdir}/runlevels/${OPENRC_RUNLEVEL}" ]; then
-            mkdir -p "$D${sysconfdir}/runlevels/${OPENRC_RUNLEVEL}"
-        fi
+        for service_escaped in ${OPENRC_SERVICES_ESCAPED}; do
+            # Get unescaped service name and runlevel for this specific
+            # service using escaped name
+            eval "script=\$OPENRC_SCRIPT_${service_escaped}"
+            eval "runlevel=\$OPENRC_RUNLEVEL_${service_escaped}"
 
-        for script in ${OPENRC_SERVICES}; do
-            ln -sf ${OPENRC_INITDIR}/${script} $D${sysconfdir}/runlevels/${OPENRC_RUNLEVEL}/
+            if [ ! -d "$D${sysconfdir}/runlevels/${runlevel}" ]; then
+                mkdir -p "$D${sysconfdir}/runlevels/${runlevel}"
+            fi
+
+            ln -sf ${OPENRC_INITDIR}/${script} $D${sysconfdir}/runlevels/${runlevel}/
         done
     fi
 
@@ -37,12 +53,17 @@ openrc_postinst() {
 }
 
 openrc_prerm() {
-    for script in ${OPENRC_SERVICES}; do
-        # User may have already disabled this
-        rc-update del ${script} ${OPENRC_RUNLEVEL} || :
-    done
-
     if [ -z "$D" ]; then
+        for service_escaped in ${OPENRC_SERVICES_ESCAPED}; do
+            # Get unescaped service name and runlevel for this specific
+            # service using escaped name
+            eval "script=\$OPENRC_SCRIPT_${service_escaped}"
+            eval "runlevel=\$OPENRC_RUNLEVEL_${service_escaped}"
+
+            # User may have already disabled this
+            rc-update del ${script} ${runlevel} || :
+        done
+
         for script in ${OPENRC_SERVICES}; do
             rc-service --ifexists --ifstarted ${script} stop
         done
@@ -97,10 +118,46 @@ python openrc_populate_packages() {
         localdata.prependVar("OVERRIDES", f"{pkg}:")
         localdata.setVar(f"OPENRC_SERVICES:{pkg}", " ".join(services))
 
+        # Prepare per-service runlevel variables and escaped service names for shell scripts
+        script_vars = ""
+        runlevel_vars = ""
+        services_escaped = ""
+
+        for service in services:
+            runlevel = d.getVar(f"OPENRC_RUNLEVEL:{service}")
+            # if runlevel is not specified for a particular service, use the default
+            if runlevel is None:
+                runlevel = localdata.getVar("OPENRC_RUNLEVEL") or "default"
+
+            # Create escaped version of service name for shell variables
+            service_escaped = service.replace('-', '_')
+            if services_escaped:
+                services_escaped += " "
+            services_escaped += service_escaped
+
+            if script_vars:
+                script_vars += "; "
+            script_vars += f"OPENRC_SCRIPT_{service_escaped}={service}"
+
+            if runlevel_vars:
+                runlevel_vars += "; "
+            runlevel_vars += f"OPENRC_RUNLEVEL_{service_escaped}={runlevel}"
+
+        localdata.setVar("OPENRC_SERVICES_ESCAPED", services_escaped)
+
         for func in ("postinst", "prerm"):
             imp = d.getVar(f"pkg_{func}:{pkg}")
             if not imp:
                 imp = "#!/bin/sh\n"
+
+            # Add the script name (unescaped service name) to the script
+            if script_vars:
+                imp += f"{script_vars}\n"
+
+            # Add the runlevel variables to the script
+            if runlevel_vars:
+                imp += f"{runlevel_vars}\n"
+
             imp += localdata.getVar(f"openrc_{func}")
             d.setVar(f"pkg_{func}:{pkg}", imp)
 
