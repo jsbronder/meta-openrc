@@ -19,10 +19,6 @@ python __anonymous() {
 }
 
 openrc_postinst() {
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        exit 0
-    fi
-
     if [ "${OPENRC_AUTO_ENABLE}" = "enable" ]; then
         if [ ! -d "$D${sysconfdir}/runlevels/${OPENRC_RUNLEVEL}" ]; then
             mkdir -p "$D${sysconfdir}/runlevels/${OPENRC_RUNLEVEL}"
@@ -41,10 +37,6 @@ openrc_postinst() {
 }
 
 openrc_prerm() {
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        exit 0
-    fi
-
     for script in ${OPENRC_SERVICES}; do
         # User may have already disabled this
         rc-update del ${script} ${OPENRC_RUNLEVEL} || :
@@ -52,12 +44,18 @@ openrc_prerm() {
 
     if [ -z "$D" ]; then
         for script in ${OPENRC_SERVICES}; do
-            rc-service --ifstarted ${script} stop
+            rc-service --ifexists --ifstarted ${script} stop
         done
     fi
 }
 
-openrc_populate_packages[vardeps] += "openrc_prerm openrc_postinst"
+openrc_populate_packages[vardeps] += " \
+    OPENRC_PACKAGES \
+    OPENRC_SERVICES \
+    OPENRC_AUTO_ENABLE \
+    OPENRC_RUNLEVEL \
+    openrc_prerm openrc_postinst \
+"
 openrc_populate_packages[vardepsexclude] += "OVERRIDES"
 
 python openrc_populate_packages() {
