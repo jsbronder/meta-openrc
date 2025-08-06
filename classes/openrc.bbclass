@@ -44,7 +44,7 @@ openrc_prerm() {
 
     if [ -z "$D" ]; then
         for script in ${OPENRC_SERVICES}; do
-            rc-service --ifstarted ${script} stop
+            rc-service --ifexists --ifstarted ${script} stop
         done
     fi
 }
