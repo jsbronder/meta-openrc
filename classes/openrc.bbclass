@@ -49,7 +49,13 @@ openrc_prerm() {
     fi
 }
 
-openrc_populate_packages[vardeps] += "openrc_prerm openrc_postinst"
+openrc_populate_packages[vardeps] += " \
+    OPENRC_PACKAGES \
+    OPENRC_SERVICES \
+    OPENRC_AUTO_ENABLE \
+    OPENRC_RUNLEVEL \
+    openrc_prerm openrc_postinst \
+"
 openrc_populate_packages[vardepsexclude] += "OVERRIDES"
 
 python openrc_populate_packages() {
