@@ -14,11 +14,12 @@ S = "${WORKDIR}/git"
 
 inherit pkgconfig meson
 
-PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'audit pam selinux usrmerge', d)}"
+PACKAGECONFIG ??= "newnet ${@bb.utils.filter('DISTRO_FEATURES', 'audit pam selinux usrmerge', d)}"
 
 PACKAGECONFIG[audit] = "-Daudit=enabled,-Daudit=disabled,audit"
 PACKAGECONFIG[bash-completions] = "-Dbash-completions=true,-Dbash-completions=false,bash-completion"
 PACKAGECONFIG[capabilities] = "-Dcapabilities=enabled,-Dcapabilities=disabled,libcap"
+PACKAGECONFIG[newnet] = "-Dnewnet=true,-Dnewnet=false"
 PACKAGECONFIG[pam] = "-Dpam=true,-Dpam=false,libpam"
 PACKAGECONFIG[selinux] = "-Dselinux=enabled,-Dselinux=disabled,libselinux"
 PACKAGECONFIG[usrmerge] = "-Drootprefix=/usr,-Drootprefix=/"
