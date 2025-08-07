@@ -6,7 +6,7 @@ OPENRC_PACKAGES:class-native ?= ""
 OPENRC_PACKAGES:class-nativesdk ?= ""
 
 OPENRC_SERVICES ?= "${PN}"
-OPENRC_AUTO_ENABLE ??= "disabled"
+OPENRC_AUTO_ENABLE ??= "disable"
 OPENRC_RUNLEVEL ??= "default"
 
 RDEPENDS:${PN}:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc', '', d)}"
@@ -24,6 +24,7 @@ python __anonymous() {
     openrc_packages = d.getVar('OPENRC_PACKAGES')
     for pkg in openrc_packages.split():
         d.appendVarFlag('openrc_populate_packages', 'vardeps', f' OPENRC_SERVICES:{pkg}')
+        d.appendVarFlag('openrc_populate_packages', 'vardeps', f' OPENRC_AUTO_ENABLE:{pkg}')
         services = d.getVar(f'OPENRC_SERVICES:{pkg}') or d.getVar('OPENRC_SERVICES') or pkg
         for service in services.split():
             d.appendVarFlag('openrc_populate_packages', 'vardeps', f' OPENRC_RUNLEVEL:{service}')
@@ -81,6 +82,12 @@ openrc_populate_packages[vardepsexclude] += "OVERRIDES"
 
 python openrc_populate_packages() {
     import pathlib
+
+    def get_package_var(d, var, pkg):
+        val = (d.getVar('%s:%s' % (var, pkg)) or "").strip()
+        if val == "":
+            val = (d.getVar(var) or "").strip()
+        return val
 
     def get_openrc_services(pkg):
         localdata = d.createCopy()
@@ -176,6 +183,10 @@ python openrc_populate_packages() {
     for pkg in d.getVar("OPENRC_PACKAGES").split():
         if pkg not in recipe_packages:
             bb.error(f"{pkg} does not appear in the package list, please add it")
+
+        auto_enable = get_package_var(d, "OPENRC_AUTO_ENABLE", pkg)
+        if auto_enable not in ("enable", "disable"):
+            bb.fatal(f"OPENRC_AUTO_ENABLE for {pkg} must be 'enable' or 'disable', got '{auto_enable}'")
 
         services = get_openrc_services(pkg)
         check_and_update_installed_files(pkg, services)
