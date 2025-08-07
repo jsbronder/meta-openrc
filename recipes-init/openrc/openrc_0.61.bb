@@ -14,10 +14,11 @@ DEPENDS += "libcap"
 
 inherit pkgconfig meson
 
-PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'audit pam selinux', d)}"
+PACKAGECONFIG ??= "newnet ${@bb.utils.filter('DISTRO_FEATURES', 'audit pam selinux', d)}"
 
 PACKAGECONFIG[audit] = "-Daudit=enabled,-Daudit=disabled,audit"
 PACKAGECONFIG[bash-completions] = "-Dbash-completions=true,-Dbash-completions=false,bash-completion"
+PACKAGECONFIG[newnet] = "-Dnewnet=true,-Dnewnet=false"
 PACKAGECONFIG[pam] = "-Dpam=true,-Dpam=false,libpam"
 PACKAGECONFIG[selinux] = "-Dselinux=enabled,-Dselinux=disabled,libselinux"
 PACKAGECONFIG[zsh-completions] = "-Dzsh-completions=true,-Dzsh-completions=false"
