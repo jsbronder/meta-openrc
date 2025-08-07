@@ -9,8 +9,6 @@ OPENRC_SERVICES ?= "${PN}"
 OPENRC_AUTO_ENABLE ??= "disable"
 OPENRC_RUNLEVEL ??= "default"
 
-RDEPENDS:${PN}:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc', '', d)}"
-
 python __anonymous() {
     # Return early if openrc is not in DISTRO_FEATURES
     if not bb.utils.contains('DISTRO_FEATURES', 'openrc', True, False, d):
@@ -23,6 +21,7 @@ python __anonymous() {
     # Add vardeps for per-service runlevels
     openrc_packages = d.getVar('OPENRC_PACKAGES')
     for pkg in openrc_packages.split():
+        d.appendVar('RDEPENDS:' + pkg, " openrc")
         d.appendVarFlag('openrc_populate_packages', 'vardeps', f' OPENRC_SERVICES:{pkg}')
         d.appendVarFlag('openrc_populate_packages', 'vardeps', f' OPENRC_AUTO_ENABLE:{pkg}')
         services = d.getVar(f'OPENRC_SERVICES:{pkg}') or d.getVar('OPENRC_SERVICES') or pkg
