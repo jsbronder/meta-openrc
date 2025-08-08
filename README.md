@@ -42,7 +42,74 @@ Usage
 
     `INIT_MANAGER = "openrc"`
 
-3. Update your image to `inherit openrc-image` and set the following as
+3. For recipes providing OpenRC services, inherit the `openrc` bbclass and configure services:
+
+    ```bitbake
+    SRC_URI:append = " \
+        file://mysetupservice.initd \
+        file://mysetupservice.confd \
+        file://${PN}-init.initd \
+        file://${PN}-daemon.initd \
+    "
+
+    inherit openrc
+
+    # Define which packages provide OpenRC services, by default OPENRC_PACKAGES = "${PN}"
+    OPENRC_PACKAGES = "${PN}-setup ${PN}-daemon"
+
+    # Configure services for each package
+    OPENRC_SERVICES:${PN}-setup = "mysetupservice" # Could be also ${PN}-setup for e.g.
+
+    # Services are disabled by default
+    # OPENRC_AUTO_ENABLE:${PN}-setup = "disable"
+
+    OPENRC_SERVICES:${PN}-daemon = "${PN}-init ${PN}-daemon"
+    OPENRC_AUTO_ENABLE:${PN}-daemon = "enable"
+    # All services in ${PN}-daemon package are auto-enabled
+
+    # Override runlevel for specific services (default is 'default')
+    OPENRC_RUNLEVEL:${PN}-init = "boot"
+
+    do_install:append() {
+        # Install OpenRC conf script
+        openrc_install_confd ${WORKDIR}/mysetupservice.confd
+
+        # Install OpenRC scripts
+        openrc_install_initd ${WORKDIR}/mysetupservice.initd
+        openrc_install_initd ${WORKDIR}/${PN}-init.initd
+        openrc_install_initd ${WORKDIR}/${PN}-daemon.initd
+    }
+
+    FILES:${PN}-setup += " \
+        ${OPENRC_INITDIR}/mysetupservice.initd \
+        ${OPENRC_CONFDIR}/mysetupservice.confd \
+    "
+
+    CONFFILES:${PN}-setup += " \
+        ${OPENRC_CONFDIR}/mysetupservice.confd \
+    "
+
+    FILES:${PN}-daemon += " \
+        ${OPENRC_INITDIR}/${PN}-init.initd \
+        ${OPENRC_INITDIR}/${PN}-daemon.initd \
+    "
+    ```
+
+    **Important:** Each package listed in `OPENRC_PACKAGES` must correspond to an actual package defined in the recipe's `PACKAGES` variable. The build will fail with an error if an OpenRC package doesn't match an existing Yocto package.
+
+    **Available configuration variables:**
+
+    - **OPENRC_PACKAGES**: Space-separated list of packages that provide OpenRC services (defaults to `${PN}`)
+    - **OPENRC_SERVICES[:package]**: Space-separated list of service names for a package (defaults to package name)
+    - **OPENRC_AUTO_ENABLE[:package]**: Set to "enable" to automatically enable services (defaults to "disable")
+    - **OPENRC_RUNLEVEL[:service]**: Target runlevel for a specific service (defaults to "default")
+
+    **Helper functions for installation:**
+
+    - **openrc_install_initd**: Install an OpenRC init script to `/etc/init.d/`
+    - **openrc_install_confd**: Install an OpenRC configuration file to `/etc/conf.d/`
+
+4. Update your image to `inherit openrc-image` and set the following as
    necessary (see [openrc-image.bb](recipes-test/openrc-image/openrc-image.bb)
    for an example):
 
