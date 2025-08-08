@@ -226,37 +226,33 @@ CLEAN_INITD = ""
 # path passed as an argument to openrc's init-dir.  Automatically strips
 # '.initd' from the end of each path.
 openrc_install_initd() {
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        return
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
+        local svc
+        local path
+
+        [ ! -d ${D}${OPENRC_INITDIR} ] && install -d ${D}${OPENRC_INITDIR}
+
+        for path in $*; do
+            svc=$(basename ${path%\.initd})
+            install -m 755 ${path} ${D}${OPENRC_INITDIR}/${svc}
+            sed -i "1s,.*,#\!${base_sbindir}/openrc-run," ${D}${OPENRC_INITDIR}/${svc}
+        done
     fi
-
-    local svc
-    local path
-
-    [ ! -d ${D}${OPENRC_INITDIR} ] && install -d ${D}${OPENRC_INITDIR}
-
-    for path in $*; do
-        svc=$(basename ${path%\.initd})
-        install -m 755 ${path} ${D}${OPENRC_INITDIR}/${svc}
-        sed -i "1s,.*,#\!${base_sbindir}/openrc-run," ${D}${OPENRC_INITDIR}/${svc}
-    done
 }
 
 # Convenience wrapper for installing openrc config files that installs each
 # path passed as an argument to openrc's conf-dir.  Automatically strips
 # '.confd' from the end of each path.
 openrc_install_confd() {
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
-        return
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'true', 'false', d)}; then
+        local svc
+        local path
+
+        [ ! -d ${D}${OPENRC_CONFDIR} ] && install -d ${D}${OPENRC_CONFDIR}
+
+        for path in $*; do
+            svc=$(basename ${path%\.confd})
+            install -m 644 ${path} ${D}${OPENRC_CONFDIR}/${svc}
+        done
     fi
-
-    local svc
-    local path
-
-    [ ! -d ${D}${OPENRC_CONFDIR} ] && install -d ${D}${OPENRC_CONFDIR}
-
-    for path in $*; do
-        svc=$(basename ${path%\.confd})
-        install -m 644 ${path} ${D}${OPENRC_CONFDIR}/${svc}
-    done
 }
