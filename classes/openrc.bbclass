@@ -135,7 +135,8 @@ python openrc_populate_packages() {
                 runlevel = localdata.getVar("OPENRC_RUNLEVEL") or "default"
 
             # Create escaped version of service name for shell variables
-            service_escaped = service.replace('-', '_')
+            # replace '-' and '.' with '_' to ensure valid shell variable names
+            service_escaped = service.translate(str.maketrans('-.', '__'))
             if services_escaped:
                 services_escaped += " "
             services_escaped += service_escaped
