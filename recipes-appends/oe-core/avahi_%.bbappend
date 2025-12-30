@@ -1,4 +1,4 @@
-OPENRC_PACKAGES="avahi-daemon avahi-dnsconfd"
+OPENRC_PACKAGES = "avahi-daemon avahi-dnsconfd"
 
 inherit openrc
 
