@@ -59,11 +59,15 @@ jobs:
             sstate-openrc-${{ env.OE_BRANCH }}
             sstate-openrc-
             sstate-
-      - name: Clone Poky
-        run: git clone -b ${{ env.OE_BRANCH }} https://git.yoctoproject.org/poky
+      - name: Clone bitbake
+        run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/bitbake
+      - name: Clone oe-core
+        run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/openembedded-core
+      - name: Clone meta-oe
+        run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/meta-openembedded
       - name: Initialize build directory
         run: |
-          source poky/oe-init-build-env build
+          source openembedded-core/oe-init-build-env build
           bitbake-layers add-layer ../meta-openrc
           echo 'INHERIT += "rm_work_and_downloads"' >> conf/local.conf
           echo 'DISTRO_FEATURES:remove = "alsa bluetooth usbgadget zeroconf 3g nfc x11 opengl ptest wayland vulkan gobject-introspection-data"' >> conf/local.conf
@@ -79,7 +83,7 @@ jobs:
           fi
       - name: Build openrc image
         run: |
-          source poky/oe-init-build-env build
+          source openembedded-core/oe-init-build-env build
           # Build in stages so we can wipe tmp in between to stay under the
           # 14Gb of disk Github gives us.  rm_work isn't sufficient.
           bitbake openrc
@@ -88,7 +92,7 @@ jobs:
       - name: Prune Shared-State Cache and tmpdir
         if: always()
         run: |
-          source poky/oe-init-build-env build
+          source openembedded-core/oe-init-build-env build
           du -sh sstate-cache
           sstate-cache-management.py --yes --cache-dir=sstate-cache --remove-duplicated
           sstate-cache-management.py --yes --cache-dir=sstate-cache --stamps-dir=tmp/stamps
@@ -122,9 +126,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: meta-openrc
-      - name: Clone Poky
-        run: git clone -b ${{ env.OE_BRANCH }} git://git.yoctoproject.org/poky
+      - name: Clone bitbake
+        run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/bitbake
+      - name: Clone oe-core
+        run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/openembedded-core
       - name: Check layer
         run: |
-          source poky/oe-init-build-env build
+          source openembedded-core/oe-init-build-env build
           yocto-check-layer --without-software-layer-signature-check ../meta-openrc
