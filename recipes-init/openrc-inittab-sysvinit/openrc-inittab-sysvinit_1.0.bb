@@ -15,7 +15,7 @@ do_compile[noexec] = "1"
 USE_VT ?= "1"
 SYSVINIT_ENABLED_GETTYS ?= "1"
 
-sbindir="${@d.getVar(bb.utils.contains('PACKAGECONFIG', 'usrmerge', 'sbindir', 'base_sbindir', d))}"
+sbindir = "${@d.getVar(bb.utils.contains('PACKAGECONFIG', 'usrmerge', 'sbindir', 'base_sbindir', d))}"
 
 do_install() {
     install -d ${D}${sysconfdir}
