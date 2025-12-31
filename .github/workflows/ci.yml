@@ -60,7 +60,7 @@ jobs:
             sstate-openrc-
             sstate-
       - name: Clone bitbake
-        run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/bitbake
+        run: git clone -b 2.16 https://github.com/openembedded/bitbake
       - name: Clone oe-core
         run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/openembedded-core
       - name: Clone meta-oe
@@ -127,7 +127,7 @@ jobs:
         with:
           path: meta-openrc
       - name: Clone bitbake
-        run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/bitbake
+        run: git clone -b 2.16 https://github.com/openembedded/bitbake
       - name: Clone oe-core
         run: git clone -b ${{ env.OE_BRANCH }} https://github.com/openembedded/openembedded-core
       - name: Check layer
