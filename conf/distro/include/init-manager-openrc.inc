@@ -1,6 +1,6 @@
 # Use OpenRC for system initialization
 DISTRO_FEATURES:append = " openrc"
-DISTRO_FEATURES_BACKFILL_CONSIDERED:append = " sysvinit systemd"
+DISTRO_FEATURES_OPTED_OUT:append = " sysvinit systemd"
 VIRTUAL-RUNTIME_init_manager ??= "openrc-init"
 VIRTUAL-RUNTIME_initscripts ??= "openrc"
 VIRTUAL-RUNTIME_login_manager ??= "busybox"
