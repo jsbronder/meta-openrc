@@ -1,7 +1,7 @@
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=18590035fb3f5120d3a5e4b781f9ae25"
 
-SRCREV = "fec22aaac8bad393b372175130d184b74a61d2b2"
+SRCREV = "83fb7385f4e9115a1c804b1c035bfbad04ebc46a"
 
 SRC_URI = " \
     git://github.com/openrc/openrc.git;nobranch=1;protocol=https \
@@ -28,8 +28,6 @@ EXTRA_OEMESON += " \
     --sbindir ${base_sbindir} \
     --libdir ${base_libdir} \
     --libexecdir ${libexecdir} \
-    -Dos=Linux \
-    -Dpkg_prefix=${prefix} \
     -Dsysvinit=true \
 "
 
