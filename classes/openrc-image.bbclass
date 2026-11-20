@@ -17,7 +17,7 @@ OPENRC_DELETED_SERVICES ?= ""
 # [stacked runlevel]:[base runlevel]
 OPENRC_STACKED_RUNLEVELS ?= ""
 
-ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc_stack_runlevels; openrc_add_services; openrc_disable_services; openrc_delete_services; ', '', d)}"
+ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('DISTRO_FEATURES', 'openrc', 'openrc_stack_runlevels openrc_add_services openrc_disable_services openrc_delete_services ', '', d)}"
 
 openrc_stack_runlevels() {
     local stack
@@ -89,7 +89,7 @@ openrc_delete_services() {
 # Like oe-core/meta/classes/rootfs-postcommands, allow dropbear to accept
 # logins from accounts with an empty password string if allow-empty-password is
 # enabled.
-ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('IMAGE_FEATURES', 'allow-empty-password', 'openrc_ssh_allow_empty_password; ', '', d)}"
+ROOTFS_POSTPROCESS_COMMAND += "${@bb.utils.contains('IMAGE_FEATURES', 'allow-empty-password', 'openrc_ssh_allow_empty_password ', '', d)}"
 
 openrc_ssh_allow_empty_password() {
     local confd=${IMAGE_ROOTFS}${OPENRC_CONFDIR}/dropbear
