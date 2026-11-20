@@ -108,7 +108,7 @@ RCONFLICTS:${PN} = " \
     modutils-initscripts \
 "
 RCONFLICTS:${PN}-init = " \
-    ${@oe.utils.str_filter_out(d.expand('${PN}-init'), d.getVar('VIRTUAL-RUNTIME_init_manager'), d)} \
+    ${@oe.utils.str_filter_out(d.expand('${PN}-init'), d.getVar('VIRTUAL-RUNTIME_init_manager'))} \
 "
 
 RPROVIDES:${PN}-init = " \
